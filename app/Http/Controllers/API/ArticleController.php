@@ -17,8 +17,8 @@ class ArticleController extends BaseController
      */
     public function index()
     {
-        $articles = Article::orderBy('title', 'asc')->with('publication')->get();
-
+        $articles = Article::with(['publication','topics'])
+        ->orderBy('title')->get();
         foreach($articles as $article) {
             $article->image_url = $this->getS3Url($article->image_url);
         }
@@ -49,6 +49,8 @@ class ArticleController extends BaseController
             'file' => 'required|image|mimes:jpeg,png,jpg,gif,svg,avif|max:2048',
             'link' => 'required|url',
             'publication_id' => 'required|integer',
+            'topics'    => 'nullable|array',
+            'topics.*'  => 'integer|exists:topics,id',
         ]);
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
@@ -77,11 +79,18 @@ class ArticleController extends BaseController
             $article->image_url = $path;
         }
 
+        
+
         $article->title = $request['title'];
         $article->author = $request['author'];
         $article->link = $request['link'];
+        $article->publication_id = $request['publication_id'];
 
         $article->save();
+
+        if ($request->has('topics')) {
+            $article->topics()->sync($request->topics);
+        }
 
         if (isset($article->image_url)) {
             $article->image_url = $this->getS3Url($article->image_url);
@@ -121,6 +130,9 @@ class ArticleController extends BaseController
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'link' => 'required|url',
+            'publication_id' => 'required|integer',
+            'topics'    => 'nullable|array',
+            'topics.*'  => 'integer|exists:topics,id',
         ]);
 
         if ($validator->fails()) {
@@ -130,8 +142,12 @@ class ArticleController extends BaseController
         $article->title = $request['title'];
         $article->author = $request['author'];
         $article->link = $request['link'];
+        $article->publication_id = $request['publication_id'];
 
         $article->save();
+        if ($request->has('topics')) {
+            $article->topics()->sync($request->topics);
+        }
 
         if (isset($article->image_url)) {
             $article->image_url = $this->getS3Url($article->image_url);

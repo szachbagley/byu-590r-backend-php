@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Publication;
 use App\Models\Article;
+use App\Models\Topic;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             PublicationSeeder::class,
             ArticleSeeder::class,
+            TopicSeeder::class,
         ]);
     }
 }

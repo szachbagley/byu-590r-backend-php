@@ -6,6 +6,7 @@ use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\ArticleController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\PublicationController;
+use App\Http\Controllers\API\TopicController;
 
 Route::controller(RegisterController::class)->group(function() {
     Route::post('register', 'register');
@@ -25,4 +26,6 @@ Route::middleware('auth:sanctum')->group( function () {
 
 Route::resource('articles', ArticleController::class);
 Route::apiResource('publications',PublicationController::class)->only(['index','show']);
+Route::apiResource('topics', TopicController::class)
+     ->only(['index','show']);
 Route::post('articles/{article}/update_article_picture', [ArticleController::class, 'updateArticlePicture']);
